@@ -180,14 +180,15 @@ Solutions for common problems and interoperability recipes are included.</p>
 <div id="toctitle">Contents</div>
 <ul class="sectlevel1">
 <li><a href="#groovy_vs_kotlin_dsl_tradeoffs">Groovy vs. Kotlin DSL tradeoffs</a></li>
-<li><a href="#ide_support">IDE Support</a></li>
+<li><a href="#kotlin_dsl_limitations">Kotlin DSL Limitations</a></li>
+<li><a href="#ide-support">IDE Support</a></li>
 <li><a href="#script_file_names">Script file names</a></li>
 <li><a href="#applying_plugins">Applying plugins</a></li>
-<li><a href="#configuring_plugins">Configuring plugins</a></li>
+<li><a href="#configuring-plugins">Configuring plugins</a></li>
 <li><a href="#declarative-scripts">Keeping build scripts declarative</a></li>
 <li><a href="#configuring-tasks">Configuring tasks</a></li>
 <li><a href="#creating_tasks">Creating tasks</a></li>
-<li><a href="#configurations_and_dependencies">Configurations and dependencies</a></li>
+<li><a href="#configurations-and-dependencies">Configurations and dependencies</a></li>
 <li><a href="#multi_project_builds">Multi project builds</a></li>
 <li><a href="#migration_strategies">Migration strategies</a></li>
 <li><a href="#interop">Interoperability</a></li>
@@ -306,7 +307,50 @@ In general, follow the advice given in the Gradle <a href="https://docs.gradle.o
 </div>
 </div>
 <div class="sect1">
-<h2 id="ide_support"><a class="anchor" href="#ide_support"></a><a class="link" href="#ide_support">IDE Support</a></h2>
+<h2 id="kotlin_dsl_limitations"><a class="anchor" href="#kotlin_dsl_limitations"></a><a class="link" href="#kotlin_dsl_limitations">Kotlin DSL Limitations</a></h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Supported Platforms</dt>
+<dd>
+<p>A Java Development Kit (JDK), version 1.8 or better is required to run Gradle when using the Kotlin DSL.
+The embedded Kotlin compiler is known to work on Linux, macos, Windows, Cygwin, FreeBSD and Solaris on x86-64 architectures.</p>
+</dd>
+<dt class="hdlist1">Performance</dt>
+<dd>
+<p>In "everything is up-to-date" scenarios, the Groovy DSL and Kotlin DSL performance characteristics are similar.
+However, the embedded Kotlin compiler being slower than the Groovy compiler, the "first use" use case is slower with the Kotlin DSL than with the Groovy DSL.
+The same applies to the "buildSrc change" use case which invalidates the caching of all build scripts.
+See <a href="https://github.com/gradle/kotlin-dsl/issues/902">gradle/kotlin-dsl#902</a> for more information and some numbers.</p>
+</dd>
+<dt class="hdlist1">Static DSL</dt>
+<dd>
+<p>The Gradle configuration model is dynamic.
+The Kotlin DSL provides a static view over this dynamic model.
+But not all use cases are supported.
+See the <a href="#configuring-plugins">Configuring plugins</a> and <a href="#configurations-and-dependencies">Configurations and dependencies</a> sections below for supported use cases and how to dynamically access the Gradle model.</p>
+</dd>
+<dt class="hdlist1">IDE support</dt>
+<dd>
+<p>IntelliJ IDEA and Android Studio both support editing Gradle Kotlin DSL scripts.
+Other IDEs might display such scripts as plain text or simply syntax highlighted.
+See the <a href="#ide-support">IDE Support</a> section below for more information.</p>
+</dd>
+<dt class="hdlist1">Software model</dt>
+<dd>
+<p>The DSL of the <a href="https://blog.gradle.org/state-and-future-of-the-gradle-software-model">discontinued Gradle Software Model</a> is not supported in Gradle Kotlin DSL scripts.
+However, declaring and using a <code>RuleSource</code> is supported, see the <a href="https://github.com/gradle/kotlin-dsl/tree/master/samples/model-rules">model-rules</a> sample that demonstrates how to write rules in Kotlin and how to use them from a Gradle Kotlin DSL script.</p>
+</dd>
+<dt class="hdlist1">Open issues</dt>
+<dd>
+<p>Please refer to the <code>gradle/kotlin-dsl</code> <a href="https://github.com/gradle/kotlin-dsl/issues/">issue tracker</a> when facing an issue.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ide-support"><a class="anchor" href="#ide-support"></a><a class="link" href="#ide-support">IDE Support</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>IntelliJ IDEA and Android Studio both support the edition of Gradle Kotlin DSL scripts and provide auto-completion, content assist, quick documentation, navigation to sources, refactoring and more.</p>
@@ -333,7 +377,21 @@ You must <a href="https://www.jetbrains.com/help/idea/gradle.html#gradle_import"
 </div>
 <div class="paragraph">
 <p>Even though other IDEs have no support for code completion and content assist when editing Kotlin DSL scripts, importing and working with a Gradle build using the Kotlin DSL works as usual.
-This is true for both <a href="https://www.eclipse.org/">Eclipse</a>, thanks to the <a href="https://projects.eclipse.org/projects/tools.buildship">Buildship</a> project, and <a href="https://netbeans.apache.org/">Apache Netbeans</a>, thanks to its <a href="https://github.com/kelemen/netbeans-gradle-project">Gradle plugin</a>.</p>
+This is true for both <a href="https://www.eclipse.org/">Eclipse</a>, thanks to the <a href="https://projects.eclipse.org/projects/tools.buildship">Buildship</a> project, and <a href="https://netbeans.apache.org/">Apache Netbeans</a>, thanks to its <a href="https://github.com/kelemen/netbeans-gradle-project">Gradle plugin</a>.
+Therefore, we do not recommend migrating your build to the Gradle Kotlin DSL at this time unless your build authoring team is using IntelliJ IDEA or Android Studio.</p>
+</div>
+<div class="paragraph">
+<p>If you encounter any IDE related issue, please report them to the corresponding issue tracker:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>IntelliJ IDEA issues go to <a href="https://youtrack.jetbrains.com/">JetBrains Youtrack issue tracker</a>,</p>
+</li>
+<li>
+<p>Android Studio issues go to <a href="https://source.android.com/setup/contribute/report-bugs">Google Android issue tracker</a>.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -492,7 +550,7 @@ apply(plugin = "org.springframework.boot")</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="configuring_plugins"><a class="anchor" href="#configuring_plugins"></a><a class="link" href="#configuring_plugins">Configuring plugins</a></h2>
+<h2 id="configuring-plugins"><a class="anchor" href="#configuring-plugins"></a><a class="link" href="#configuring-plugins">Configuring plugins</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Many plugins come with extensions to configure them. If those plugins are applied using the declarative <code>plugins {}</code> block (which is true for the <code>jacoco</code> plugin in the following example), then Kotlin extension functions are made available to configure their extension, the same way as in Groovy:</p>
@@ -982,7 +1040,7 @@ tasks {
 </div>
 </div>
 <div class="sect1">
-<h2 id="configurations_and_dependencies"><a class="anchor" href="#configurations_and_dependencies"></a><a class="link" href="#configurations_and_dependencies">Configurations and dependencies</a></h2>
+<h2 id="configurations-and-dependencies"><a class="anchor" href="#configurations-and-dependencies"></a><a class="link" href="#configurations-and-dependencies">Configurations and dependencies</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Declaring dependencies in the existing configurations is not much different from doing it in Groovy:</p>
